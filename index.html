@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Pa4 Presentation</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Jukun Zhang" />
+    <meta name="date" content="2025-03-29" />
+    <script src="libs/header-attrs-2.29/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/rutgers.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rutgers-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Pa4 Presentation
+]
+.subtitle[
+## ⚔<br/>with xaringan
+]
+.author[
+### Jukun Zhang
+]
+.date[
+### 2025-03-29
+]
+
+---
+
+
+#Hello
+
+##Load library
+
+
+
+``` r
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(ds4ling)
+```
+
+---
+
+##Load the dataset
+
+
+``` r
+mydata1 &lt;- read.csv("C:/Users/zhang/OneDrive/Desktop/pa4/data_raw/fricatives/fricatives.csv")
+print(mydata1)
+```
+
+```
+##    obs    s_cog s_skewness   sh_cog sh_skewness
+## 1    1 3285.300   2.724530 2556.033    2.305261
+## 2    2 3510.648   3.093099 2781.147    2.472007
+## 3    3 4029.248   3.331941 2978.726    2.475432
+## 4    4 4122.940   2.995289 2997.093    2.449014
+## 5    5 4664.371   2.875139 3020.310    2.649265
+## 6    6 4679.532   3.839298 3096.510    2.777500
+## 7    7 4792.505   3.529666 3164.692    2.101727
+## 8    8 4811.244   3.513888 3252.722    2.740909
+## 9    9 4873.546   3.434093 3405.381    2.777636
+## 10  10 4878.759   3.541401 3432.043    2.630968
+## 11  11 5021.850   3.478050 3510.379    2.945392
+## 12  12 5085.005   3.626642 3528.383    2.686344
+## 13  13 5105.710   3.472806 3541.388    2.713828
+## 14  14 5194.612   3.323264 3545.065    2.944014
+## 15  15 5246.638   3.820887 3565.984    3.126917
+## 16  16 5335.476   3.971687 3621.279    2.864651
+## 17  17 5344.204   3.610354 3645.367    2.738246
+## 18  18 5387.654   3.443169 3706.223    2.615289
+## 19  19 5397.212   3.827054 3756.653    2.812120
+## 20  20 5440.687   3.711401 3891.857    2.757963
+## 21  21 5443.871   3.375292 3891.956    2.894192
+## 22  22 5446.195   3.723524 3968.608    3.063180
+## 23  23 5455.066   3.601473 4000.884    2.830071
+## 24  24 5483.810   3.673711 4022.402    3.541034
+## 25  25 5574.565   3.555968 4059.473    3.060939
+## 26  26 5683.643   4.202450 4122.603    3.287343
+## 27  27 5829.508   3.848527 4151.034    2.617692
+## 28  28 5864.582   3.611188 4213.679    3.255040
+## 29  29 5887.672   3.983274 4233.157    2.853329
+## 30  30 5889.843   3.997557 4266.360    3.317141
+## 31  31 5917.942   3.761805 4272.896    3.216074
+## 32  32 5987.429   3.415930 4296.015    3.066502
+## 33  33 6056.663   3.900235 4318.485    3.424094
+## 34  34 6075.781   4.151992 4380.408    3.049957
+## 35  35 6093.901   4.035006 4446.789    3.107272
+## 36  36 6119.826   4.040277 4455.776    3.027673
+## 37  37 6196.963   4.210646 4475.157    3.103943
+## 38  38 6238.325   3.881871 4488.581    3.433328
+## 39  39 6263.176   4.350943 4551.791    3.362636
+## 40  40 6268.533   4.133198 4560.171    3.481117
+## 41  41 6282.136   4.282530 4850.480    3.347216
+## 42  42 6321.221   4.367432 4928.322    3.539435
+## 43  43 6381.108   4.235250 4942.470    3.520068
+## 44  44 6418.977   4.033747 4966.294    3.197896
+## 45  45 6443.836   4.454511 5146.419    3.928895
+## 46  46 6600.025   3.899980 5172.444    3.613111
+## 47  47 6624.931   4.203507 5269.467    3.787853
+## 48  48 6858.680   4.378206 5584.320    3.983187
+## 49  49 7011.781   4.472666 5738.089    3.858932
+## 50  50 7095.281   4.751733 5921.294    3.899484
+```
+
+---
+
+##Tidy the dataset
+
+
+``` r
+mydata1_tidy &lt;- mydata1 |&gt;
+  pivot_longer(
+    cols = c(s_cog, s_skewness, sh_cog, sh_skewness),  
+    names_to = c("sound", "measurement"),              
+    names_sep = "_",                                   
+    values_to = "value"                                
+  )
+```
+
+---
+
+##Save the tidy version
+
+
+``` r
+write.csv(mydata1_tidy, "C:/Users/zhang/OneDrive/Desktop/pa4/data_tidy/mydata1_tidy.csv", row.names = FALSE)
+```
+---
+
+## Summary table of descriptive statistics
+
+
+``` r
+summary_table &lt;- mydata1_tidy |&gt;
+  group_by(sound, measurement) |&gt;
+  summarise(
+    mean = mean(value),
+    median = median(value),
+    sd = sd(value),
+    min = min(value),
+    max = max(value),
+    .groups = "drop"
+  )
+knitr::kable(summary_table, digits = 2, caption = "Descriptive Statistics for Fricatives")
+```
+
+
+
+Table: Descriptive Statistics for Fricatives
+
+|sound |measurement |    mean|  median|     sd|     min|     max|
+|:-----|:-----------|-------:|-------:|------:|-------:|-------:|
+|s     |cog         | 5600.45| 5629.10| 831.39| 3285.30| 7095.28|
+|s     |skewness    |    3.79|    3.82|   0.43|    2.72|    4.75|
+|sh    |cog         | 4093.86| 4091.04| 775.06| 2556.03| 5921.29|
+|sh    |skewness    |    3.07|    3.06|   0.44|    2.10|    3.98|
+
+---
+
+##Make a boxplot of center of gravity as a function of phoneme
+
+![](index_files/figure-html/Make a boxplot of center of gravity as a function of phoneme-1.png)&lt;!-- --&gt;
+
+---
+
+##Plot skewness as a function of phoneme. Use a statistical transformation
+
+![](index_files/figure-html/Make a plot of skewness as a function of phoneme-1.png)&lt;!-- --&gt;
+---
+
+## Filter 'sound == s' from mydata1_tidy
+
+
+``` r
+s_data &lt;- mydata1_tidy |&gt;
+  filter(sound == "s") |&gt;
+  pivot_wider(
+    names_from = measurement,
+    values_from = value
+  )
+
+head(s_data)
+```
+
+```
+## # A tibble: 6 × 4
+##     obs sound   cog skewness
+##   &lt;int&gt; &lt;chr&gt; &lt;dbl&gt;    &lt;dbl&gt;
+## 1     1 s     3285.     2.72
+## 2     2 s     3511.     3.09
+## 3     3 s     4029.     3.33
+## 4     4 s     4123.     3.00
+## 5     5 s     4664.     2.88
+## 6     6 s     4680.     3.84
+```
+---
+
+##Fit model and give the summary table
+
+``` r
+model1 &lt;- lm(cog ~ skewness, data = s_data)
+
+summary(model1)
+```
+
+```
+## 
+## Call:
+## lm(formula = cog ~ skewness, data = s_data)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -996.88 -254.05  -25.71  278.99 1020.41 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   -756.7      532.1  -1.422    0.161    
+## skewness      1675.6      139.4  12.022 4.37e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 419.4 on 48 degrees of freedom
+## Multiple R-squared:  0.7507,	Adjusted R-squared:  0.7455 
+## F-statistic: 144.5 on 1 and 48 DF,  p-value: 4.373e-16
+```
+---
+
+##Make Scatter plot in (8)
+
+
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+![](index_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+
+---
+
+##Check the model1 diagnostics
+
+
+``` r
+diagnosis(model1)
+```
+
+![](index_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+
+---
+##Result of the model1
+
+- We investigated whether skewness predicts center of gravity (CoG) for [s] fricative segments using a linear regression model. From the model summary the model revealed a strong, statistically significant positive relationship between skewness and CoG, β = 1675.6, t(48) = 12.02, p &lt; .001. This indicates that as spectral skewness increases, the center of gravity also increases. The model explained a substantial proportion of the variance, R² = 0.75, suggesting that skewness is a strong predictor of frequency energy distribution in [s].
+
+- Model diagnostics (Figure 2) showed no major violations of assumptions: residuals were approximately normally distributed, homoscedastic, and without extreme leverage points. The residual standard error was 419.4 Hz.
+
+- Model diagnostics indicated that assumptions of linearity, homoscedasticity, and normality were met. Residuals were randomly distributed around zero, approximately normally distributed, and followed the expected Q-Q pattern closely (r = 0.994), suggesting the linear model is appropriate for the data.
+
+---
+
+##Load the assumptions.csv dataset and make a scatterplot
+
+![](index_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+- Why it would not be appropriate to fit a model to this data: 
+The scatterplot of the assumptions.csv data shows a highly nonlinear, complex pattern that appears to loop or spiral, rather than follow any kind of linear trend.  Fitting a linear model here would lead to poor fit, biased estimates, and invalid inferences. 
+
+
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
