@@ -1,0 +1,4 @@
+"0","#| label: Loading dataset"
+"0","#| "
+"0","mydata1 <- read.csv(""C:/Users/zhang/OneDrive/Desktop/pa4/data_raw/fricatives/fricatives.csv"")"
+"0","print(mydata1)"

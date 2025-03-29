@@ -1,0 +1,3 @@
+"0","#| label: Save the tidy version"
+"0",""
+"0","write.csv(mydata1_tidy, ""C:/Users/zhang/OneDrive/Desktop/pa4/data_tidy/mydata1_tidy.csv"", row.names = FALSE)"

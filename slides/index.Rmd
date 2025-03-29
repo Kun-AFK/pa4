@@ -1,0 +1,205 @@
+---
+title: "Pa4 Presentation"
+subtitle: "⚔<br/>with xaringan"
+author: "Jukun Zhang"
+date: "`r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    css: ["rutgers", "rutgers-fonts"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+#Hello
+
+##Load library
+
+
+```{r,message=FALSE, warning=FALSE}
+#| label: Loading library 
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(ds4ling)
+```
+
+---
+
+##Load the dataset
+
+```{r}
+#| label: Loading dataset
+#| 
+mydata1 <- read.csv("C:/Users/zhang/OneDrive/Desktop/pa4/data_raw/fricatives/fricatives.csv")
+print(mydata1)
+```
+
+---
+
+##Tidy the dataset
+
+```{r}
+#| label: Tidy dataset
+
+mydata1_tidy <- mydata1 |>
+  pivot_longer(
+    cols = c(s_cog, s_skewness, sh_cog, sh_skewness),  
+    names_to = c("sound", "measurement"),              
+    names_sep = "_",                                   
+    values_to = "value"                                
+  )
+
+```
+
+---
+
+##Save the tidy version
+
+```{r}
+#| label: Save the tidy version
+
+write.csv(mydata1_tidy, "C:/Users/zhang/OneDrive/Desktop/pa4/data_tidy/mydata1_tidy.csv", row.names = FALSE)
+```
+---
+
+## Summary table of descriptive statistics
+
+```{r}
+#| label: Summary tabel of descriptive statistics
+
+summary_table <- mydata1_tidy |>
+  group_by(sound, measurement) |>
+  summarise(
+    mean = mean(value),
+    median = median(value),
+    sd = sd(value),
+    min = min(value),
+    max = max(value),
+    .groups = "drop"
+  )
+knitr::kable(summary_table, digits = 2, caption = "Descriptive Statistics for Fricatives")
+```
+
+---
+
+##Make a boxplot of center of gravity as a function of phoneme
+
+```{r, echo=FALSE, fig.width= 10, fig.height=6}
+#| label: Make a boxplot of center of gravity as a function of phoneme
+
+mydata1_tidy |>
+  filter(measurement == "cog") |>
+  ggplot(aes(x = sound, y = value, fill = sound)) +
+  geom_boxplot() +
+  labs(
+    title = "Center of Gravity by Phoneme",
+    x = "Phoneme",
+    y = "Center of Gravity (Hz)"
+  ) +
+  theme_minimal()
+```
+
+---
+
+##Plot skewness as a function of phoneme. Use a statistical transformation
+
+```{r, echo=FALSE, fig.width= 10, fig.height=6}
+#| label: Make a plot of skewness as a function of phoneme
+
+mydata1_tidy |>
+  filter(measurement == "skewness") |>
+  ggplot(aes(x = sound, y = value, color = sound)) +
+  stat_summary(fun = mean, geom = "point", size = 4) +
+  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0.2) +
+  labs(
+    title = "Mean Skewness by Phoneme",
+    x = "Phoneme",
+    y = "Skewness"
+  ) +
+  theme_minimal()
+```
+---
+
+## Filter 'sound == s' from mydata1_tidy
+
+```{r}
+s_data <- mydata1_tidy |>
+  filter(sound == "s") |>
+  pivot_wider(
+    names_from = measurement,
+    values_from = value
+  )
+
+head(s_data)
+```
+---
+
+##Fit model and give the summary table
+```{r}
+model1 <- lm(cog ~ skewness, data = s_data)
+
+summary(model1)
+```
+---
+
+##Make Scatter plot in (8)
+
+```{r, echo=FALSE, fig.width= 8, fig.height=6}
+s_data |>
+  ggplot(aes(x = skewness, y = cog)) +
+  geom_point(color = "steelblue", size = 2) +
+  geom_smooth(method = "lm", se = TRUE, color = "darkred") +
+  labs(
+    title = "Relationship Between Skewness and Center of Gravity for [s]",
+    x = "Skewness",
+    y = "Center of Gravity (Hz)"
+  ) +
+  theme_minimal()
+```
+
+---
+
+##Check the model1 diagnostics
+
+```{r, message= FALSE, warning=FALSE, fig.width=10, fig.height=6}
+diagnosis(model1)
+```
+
+---
+##Result of the model1
+
+- We investigated whether skewness predicts center of gravity (CoG) for [s] fricative segments using a linear regression model. From the model summary the model revealed a strong, statistically significant positive relationship between skewness and CoG, β = 1675.6, t(48) = 12.02, p < .001. This indicates that as spectral skewness increases, the center of gravity also increases. The model explained a substantial proportion of the variance, R² = 0.75, suggesting that skewness is a strong predictor of frequency energy distribution in [s].
+
+- Model diagnostics (Figure 2) showed no major violations of assumptions: residuals were approximately normally distributed, homoscedastic, and without extreme leverage points. The residual standard error was 419.4 Hz.
+
+- Model diagnostics indicated that assumptions of linearity, homoscedasticity, and normality were met. Residuals were randomly distributed around zero, approximately normally distributed, and followed the expected Q-Q pattern closely (r = 0.994), suggesting the linear model is appropriate for the data.
+
+---
+
+##Load the assumptions.csv dataset and make a scatterplot
+
+```{r, echo=FALSE, fig.width=7, fig.height=4}
+mydata2 <- read.csv("C:/Users/zhang/OneDrive/Desktop/pa4/data_raw/fricatives/assumptions.csv")
+
+mydata2 |>
+  ggplot(aes(x = x, y = y)) +
+  geom_point(size = 2) +
+  labs(
+    title = "Scatterplot of Assumptions Dataset",
+    x = "X",
+    y = "Y"
+  ) +
+theme_minimal()
+```
+- Why it would not be appropriate to fit a model to this data: 
+The scatterplot of the assumptions.csv data shows a highly nonlinear, complex pattern that appears to loop or spiral, rather than follow any kind of linear trend.  Fitting a linear model here would lead to poor fit, biased estimates, and invalid inferences. 
+
+
+
+
+
+
+
